@@ -248,7 +248,17 @@ if __name__ == '__main__':
     print("  GET  http://localhost:5000/history       → View predictions")
     print("  POST http://localhost:5000/clear-history → Clear history")
     print("\n[INFO] Server running on: http://localhost:5000")
-    print("[INFO] Press CTRL+C to stop\n")
+    
+    # Try to use ngrok for public URL
+    try:
+        from pyngrok import ngrok
+        public_url = ngrok.connect(5000)
+        print(f"\n🌐 PUBLIC URL (Share this!): {public_url}")
+        print("\n   Others can access from anywhere using this URL!")
+    except:
+        print("\n[INFO] ngrok not available - local only")
+    
+    print("\n[INFO] Press CTRL+C to stop\n")
     print("="*60 + "\n")
     
     app.run(debug=False, host='0.0.0.0', port=5000, threaded=True)
