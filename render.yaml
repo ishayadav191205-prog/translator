@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: sign-language-interpreter
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --chdir Code app:app --bind 0.0.0.0:$PORT
+    pythonVersion: 3.11
+    maxShutdownDelay: 30
+    routes:
+      - type: http
+        path: /

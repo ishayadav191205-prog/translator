@@ -2,17 +2,12 @@ import numpy as np
 import pickle
 import cv2, os
 from glob import glob
-from keras import optimizers
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import Dropout
-from keras.layers import Flatten
-from keras.layers.convolutional import Conv2D
-from keras.layers.convolutional import MaxPooling2D
-from keras.utils import np_utils
-from keras.callbacks import ModelCheckpoint
-from keras import backend as K
-K.set_image_dim_ordering('tf')
+from tensorflow.keras import optimizers
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
+from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.keras import backend as K
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -26,7 +21,7 @@ def get_num_of_classes():
 image_x, image_y = get_image_size()
 
 def cnn_model():
-	num_of_classes = get_num_of_classes()
+	num_of_classes = get_num_of_classes() + 1  # Add 1 to account for class numbering starting from 1
 	model = Sequential()
 	model.add(Conv2D(16, (2,2), input_shape=(image_x, image_y, 1), activation='relu'))
 	model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
@@ -38,10 +33,10 @@ def cnn_model():
 	model.add(Dense(128, activation='relu'))
 	model.add(Dropout(0.2))
 	model.add(Dense(num_of_classes, activation='softmax'))
-	sgd = optimizers.SGD(lr=1e-2)
+	sgd = optimizers.SGD(learning_rate=1e-2)
 	model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
 	filepath="cnn_model_keras2.h5"
-	checkpoint1 = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+	checkpoint1 = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
 	callbacks_list = [checkpoint1]
 	#from keras.utils import plot_model
 	#plot_model(model, to_file='model.png', show_shapes=True)
@@ -60,8 +55,8 @@ def train():
 
 	train_images = np.reshape(train_images, (train_images.shape[0], image_x, image_y, 1))
 	val_images = np.reshape(val_images, (val_images.shape[0], image_x, image_y, 1))
-	train_labels = np_utils.to_categorical(train_labels)
-	val_labels = np_utils.to_categorical(val_labels)
+	train_labels = to_categorical(train_labels)
+	val_labels = to_categorical(val_labels)
 
 	print(val_labels.shape)
 
