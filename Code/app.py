@@ -17,10 +17,16 @@ from datetime import datetime
 app = Flask(__name__, static_folder='static', static_url_path='')
 CORS(app)  # Enable cross-origin requests
 
+# Configuration from environment
+FLASK_ENV = os.getenv('FLASK_ENV', 'development')
+MODEL_PATH = os.getenv('MODEL_PATH', 'cnn_model_keras2.h5')
+DEBUG_MODE = FLASK_ENV == 'development'
+
 # Load model
-print("[INFO] Loading trained model...")
+print(f"[INFO] Loading trained model from: {MODEL_PATH}")
+print(f"[INFO] Environment: {FLASK_ENV}")
 try:
-    model = load_model('cnn_model_keras2.h5')
+    model = load_model(MODEL_PATH)
     print("[SUCCESS] Model loaded!")
 except Exception as e:
     print(f"[ERROR] Failed to load model: {e}")
